@@ -71,3 +71,7 @@ export function rowText(row: UsageRow, now: number, accent: string): StyledText 
 export function noteText(note: string): StyledText {
   return t`${italic(activeTheme().label(note))}`
 }
+
+export function hintText(hint: string): StyledText {
+  return t`${italic(activeTheme().label(hint))}`
+}

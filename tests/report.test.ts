@@ -46,3 +46,16 @@ test("fmtPanel renders rows or the note", () => {
   const empty: PanelData = { title: "Codex (ChatGPT)", rows: [] }
   expect(fmtPanel(empty, NOW)).toEqual(["Codex (ChatGPT)", "  (no data)"])
 })
+
+test("fmtPanel renders the hint under the rows", () => {
+  const panel: PanelData = {
+    title: "OpenRouter",
+    rows: [{ label: "Credits", pct: null, detail: "$8.46 left" }],
+    hint: "Per-model activity needs an OpenRouter management key",
+  }
+  expect(fmtPanel(panel, NOW)).toEqual([
+    "OpenRouter",
+    "  Credits · $8.46 left",
+    "  Per-model activity needs an OpenRouter management key",
+  ])
+})

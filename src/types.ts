@@ -17,4 +17,6 @@ export interface PanelData {
   rows: UsageRow[]
   /** Message (error or hint) shown in place of the rows */
   note?: string
+  /** Secondary message rendered under the rows (e.g. how to unlock more data) */
+  hint?: string
 }

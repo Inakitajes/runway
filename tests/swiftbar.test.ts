@@ -35,6 +35,7 @@ const antigravityPanel: PanelData = {
 const openRouterPanel: PanelData = {
   title: "OpenRouter",
   rows: [{ label: "Credits", pct: null, detail: "$0.0000 left" }],
+  hint: "Model activity needs a management key",
 }
 
 const vercelPanel: PanelData = {
@@ -123,6 +124,7 @@ test("render emits the header line with ansi/dropdown params and a full dropdown
   expect(lines).toContain("Session · 13% used · resets in 41m | color=#d97757")
   expect(lines).toContain("Week · 100% used · resets in 4d 19h | color=#74aa9c")
   expect(lines).toContain("Credits · $0.0000 left | color=#8b5cf6")
+  expect(lines).toContain("Model activity needs a management key | color=#8e8e93 length=64")
   expect(lines).toContain("No key: set AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN, or add Vercel to opencode | color=#8e8e93 length=64")
   expect(lines).toContain("Open runway | bash=/Users/davidgonzalez/code/me/runway/scripts/swiftbar/open-runway.sh")
   expect(lines).toContain("Refresh now | refresh=true")

@@ -80,6 +80,7 @@ export function render(services: MenuService[], now: number, opts: MenuOptions =
     } else {
       lines.push(`(no data) | color=${MUTED}`)
     }
+    if (service.panel.hint) lines.push(`${service.panel.hint} | color=${MUTED} length=64`)
   }
   lines.push("---")
   if (opts.openRunwayScript) lines.push(`Open runway | bash=${opts.openRunwayScript}`)

@@ -19,9 +19,9 @@ The interface follows your terminal's light/dark theme, including terminals set 
   `CLAUDE_CODE_OAUTH_TOKEN`)
 - A **Codex CLI** session (`codex login` creates `~/.codex/auth.json`)
 - An **OpenRouter** key, resolved in this order: the macOS Keychain entry written by
-  `convoy auth openrouter` (a management key, which unlocks the exact balance), then
-  `OPENROUTER_API_KEY`, then the key opencode already stores
-  (`~/.local/share/opencode/auth.json`)
+  `convoy auth openrouter` (a management key, which unlocks the exact balance **and**
+  the per-model activity view), then `OPENROUTER_API_KEY`, then the key opencode
+  already stores (`~/.local/share/opencode/auth.json`)
 - A **Vercel AI Gateway** credential, resolved in this order: `AI_GATEWAY_API_KEY`,
   `VERCEL_OIDC_TOKEN`, then the Vercel key opencode already stores
 
@@ -45,7 +45,7 @@ You can also use `bun link`, which makes `runway` available on Bun's PATH.
 | Claude Max | `GET https://api.anthropic.com/api/oauth/usage` | Bearer from the Keychain + `anthropic-beta: oauth-2025-04-20` + `User-Agent: claude-code/<v>` |
 | Codex | `GET https://chatgpt.com/backend-api/wham/usage` | Bearer from `~/.codex/auth.json` + `chatgpt-account-id` header |
 | Codex reset expiries | `GET https://chatgpt.com/backend-api/wham/rate-limit-reset-credits` | Same as Codex usage |
-| OpenRouter | `GET https://openrouter.ai/api/v1/credits` (fallback: `/api/v1/key`) | Bearer from the Keychain, `OPENROUTER_API_KEY`, or opencode |
+| OpenRouter | `GET https://openrouter.ai/api/v1/credits`, `POST https://openrouter.ai/api/v1/analytics/query` (per-model, management key only), fallback `GET https://openrouter.ai/api/v1/key` | Bearer from the Keychain, `OPENROUTER_API_KEY`, or opencode |
 | Vercel AI Gateway | `GET https://ai-gateway.vercel.sh/v1/credits` | Bearer from `AI_GATEWAY_API_KEY`, `VERCEL_OIDC_TOKEN`, or opencode |
 
 If the Codex token expires, it's refreshed against `https://auth.openai.com/oauth/token`
@@ -72,9 +72,13 @@ If the Codex token expires, it's refreshed against `https://auth.openai.com/oaut
   returns `balance: null` — the balance is only visible on the admin's billing page at
   chatgpt.com. The panel shows the pool status and today's activity
   (from `wham/profiles/me`).
-- OpenRouter management keys can read `/credits`, so the panel shows the exact balance
-  (`total_credits − total_usage`). A regular inference key gets a 403 there and falls
-  back to `/key`: the key's remaining limit, or this month's spend when the key has none.
+- The OpenRouter panel shows the exact balance (`total_credits − total_usage`) from
+  `/credits`, Today/Week/Month spend windows, and — when the key is a **management
+  key** — per-model activity rows (`requests · tokens · cost · $/M tokens`, the last
+  30 days including today) from the `analytics/query` API. Without a management key
+  the windows come from `/key` (per-key) and the panel shows a hint instead of the
+  model rows; create one at openrouter.ai/settings/management-keys and store it with
+  `convoy auth openrouter`.
 - Vercel AI Gateway's `/credits` endpoint reports the team's remaining balance. Local
   OIDC tokens expire, so use an AI Gateway API key for a persistent setup.
 - Keys and tokens are only sent to `api.anthropic.com`, `chatgpt.com`,

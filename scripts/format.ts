@@ -41,5 +41,6 @@ export function fmtPanel(panel: PanelData, now: number): string[] {
   } else {
     lines.push("  (no data)")
   }
+  if (panel.hint) lines.push(`  ${panel.hint}`)
   return lines
 }

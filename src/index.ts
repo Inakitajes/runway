@@ -16,7 +16,7 @@ import { fetchOpenRouter, OPENROUTER_TITLE } from "./providers/openrouter"
 import { fetchVercel, VERCEL_TITLE } from "./providers/vercel"
 import { fetchAntigravity, ANTIGRAVITY_TITLE } from "./providers/antigravity"
 import type { PanelData } from "./types"
-import { rowText, noteText } from "./ui"
+import { rowText, noteText, hintText } from "./ui"
 import { activeTheme, setTheme } from "./theme"
 
 const REFRESH_MS = 180_000 // safe minimum for the Anthropic endpoint
@@ -127,6 +127,7 @@ function panelLines(panel: PanelState, now: number, accent: string): StyledText[
     panel.data.rows.length > 0
       ? panel.data.rows.map((row) => rowText(row, now, accent))
       : [noteText(panel.data.note ?? "No data")]
+  if (panel.data.hint) lines.push(hintText(panel.data.hint))
   return lines
 }
 

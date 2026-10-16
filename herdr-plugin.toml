@@ -1,0 +1,26 @@
+id = "inakitajes.runway"
+name = "Runway"
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+description = "Claude Max, Codex, OpenRouter, and Vercel AI Gateway usage in a popup"
+platforms = ["macos"]
+
+[[build]]
+command = ["bun", "install", "--frozen-lockfile"]
+
+# Bind it with a [[keys.command]] of type = "plugin_action" and
+# command = "inakitajes.runway.open".
+[[actions]]
+id = "open"
+title = "Show usage"
+contexts = ["workspace"]
+command = ["sh", "-c", "exec \"$HERDR_BIN_PATH\" plugin pane open --plugin \"$HERDR_PLUGIN_ID\" --entrypoint usage"]
+
+# Closes when runway exits (q or Escape).
+[[panes]]
+id = "usage"
+title = "Runway"
+placement = "popup"
+width = 68
+height = 34
+command = ["sh", "bin/herdr-pane.sh"]

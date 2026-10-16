@@ -31,12 +31,51 @@ The interface follows your terminal's light/dark theme, including terminals set 
 bun start            # or: bun src/index.ts
 ```
 
-Keys: `r` refreshes (with a 10 s throttle), `q` or `Ctrl+C` quits.
+Keys: `r` refreshes (with a 10 s throttle), `q`, `Esc` or `Ctrl+C` quits.
 Auto-refresh every 3 minutes; countdowns tick every second without refetching.
 
 Optional global command: `make install` compiles and installs `runway` into
 `~/.local/bin` (or elsewhere with `make install INSTALL_DIR=/usr/local/bin`).
 You can also use `bun link`, which makes `runway` available on Bun's PATH.
+
+## Status bar line
+
+`runway --line` prints a one-line summary for status bars (herdr, tmux…):
+
+```
+✳ 5h 3% 7d 2%  ⬡ 7d 15%  ◆ $197.20
+```
+
+It never waits on the network: it prints the snapshot cached in
+`~/.cache/runway/snapshot.json` and, when that's older than 180 s, refreshes it
+in a detached process for the next tick. The TUI reads and writes the same
+snapshot (with a lock), so any number of bars and TUIs share one fetch every
+180 s. A provider shows `?` when it hasn't refreshed in 15 minutes; open the TUI
+to see why.
+
+```toml
+# herdr config.toml
+tab_bar_right = [
+  { type = "command", command = "$HOME/.local/bin/runway --line", interval_seconds = 30, timeout_seconds = 1 },
+]
+```
+
+## herdr plugin
+
+The repo is also a [herdr](https://herdr.dev) plugin that opens the TUI in a
+popup (`q` or `Esc` closes it):
+
+```bash
+herdr plugin install Inakitajes/runway   # or: herdr plugin link /path/to/runway
+```
+
+```toml
+# herdr config.toml
+[[keys.command]]
+key = "alt+u"
+type = "plugin_action"
+command = "inakitajes.runway.open"
+```
 
 ## Where the data comes from
 

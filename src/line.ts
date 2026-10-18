@@ -12,19 +12,15 @@ const OUTDATED_MS = 15 * 60_000
 
 const GLYPHS = { claude: "✳", codex: "⬡", openrouter: "◆", vercel: "▲" } as const
 
-/** Partial cells, 1/8 to 8/8 filled from the left; ░ is the empty track. */
-const EIGHTHS = "▏▎▍▌▋▊▉█"
-const BAR_CELLS = 3
+/** Thin line bar (━━━╸┈┈): heavy line filled in half cells over a dotted track. */
+const BAR_CELLS = 6
 
-/** Horizontal bar of BAR_CELLS cells: ░░░ (unused) … ▉░░ … ███ (exhausted). */
 export function bar(pct: number): string {
-  const total = BAR_CELLS * 8
-  let eighths = Math.min(total, Math.max(0, Math.round((pct / 100) * total)))
-  if (eighths === 0 && pct > 0) eighths = 1
-  const full = Math.floor(eighths / 8)
-  const rest = eighths % 8
-  const cells = "█".repeat(full) + (rest ? EIGHTHS[rest - 1] : "")
-  return cells + "░".repeat(BAR_CELLS - [...cells].length)
+  const total = BAR_CELLS * 2
+  let halves = Math.min(total, Math.max(0, Math.round((pct / 100) * total)))
+  if (halves === 0 && pct > 0) halves = 1
+  const cells = "━".repeat(Math.floor(halves / 2)) + (halves % 2 ? "╸" : "")
+  return cells + "┈".repeat(BAR_CELLS - cells.length)
 }
 
 function credits(row: UsageRow): string | null {
@@ -36,14 +32,17 @@ function isWindow(label: string): boolean {
   return label === "Session 5h" || label === "Week" || /^Window \d+[hd]$/.test(label)
 }
 
-// Usage windows draw a bar each, in panel order (Claude: 5h then 7d),
-// followed by the highest percentage: the window that will cut you off first.
+// Only the most used window is drawn (bar + percentage): it's the one that
+// will cut you off first, whether it's the 5h session or the week.
 function panelSummary(glyph: string, panel: PanelState | undefined, now: number): string | null {
   if (!panel || panel.data.rows.length === 0) return null
   if (now - panel.fetchedAt > OUTDATED_MS) return `${glyph} ?`
   const windows = panel.data.rows.filter((r) => r.pct !== null && isWindow(r.label)).map((r) => r.pct!)
-  const parts = windows.map(bar)
-  if (windows.length > 0) parts.push(`${Math.round(Math.max(...windows))}%`)
+  const parts: string[] = []
+  if (windows.length > 0) {
+    const worst = Math.max(...windows)
+    parts.push(bar(worst), `${Math.round(worst)}%`)
+  }
   parts.push(...panel.data.rows.map(credits).filter((c) => c !== null))
   return parts.length > 0 ? `${glyph} ${parts.join(" ")}` : null
 }

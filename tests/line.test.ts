@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 
 import type { Snapshot } from "../src/cache"
-import { formatLine } from "../src/line"
+import { bar, formatLine } from "../src/line"
 
 const now = 10_000_000_000
 
@@ -35,7 +35,7 @@ test("summarizes usage windows and credit balances, skipping empty panels", () =
     },
   }
 
-  expect(formatLine(snap, now)).toBe("✳ 5h 3% 7d 42%  ⬡ 3d 15%  ◆ $197.20")
+  expect(formatLine(snap, now)).toBe("✳ ▏░░ █▎░ 42% · ⬡ ▌░░ 15% · ◆ $197")
 })
 
 test("hides numbers that haven't refreshed in a long time", () => {
@@ -51,4 +51,8 @@ test("hides numbers that haven't refreshed in a long time", () => {
   }
 
   expect(formatLine(snap, now)).toBe("✳ ?")
+})
+
+test("bars fill three cells in eighths over an empty track", () => {
+  expect([0, 1, 30, 50, 65, 100].map(bar)).toEqual(["░░░", "▏░░", "▉░░", "█▌░", "██░", "███"])
 })

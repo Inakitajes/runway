@@ -43,8 +43,12 @@ You can also use `bun link`, which makes `runway` available on Bun's PATH.
 `runway --line` prints a one-line summary for status bars (herdr, tmux…):
 
 ```
-✳ 5h 3% 7d 2%  ⬡ 7d 15%  ◆ $197.20
+✳ ▏░░ █▎░ 42% · ⬡ ▌░░ 15% · ◆ $197
 ```
+
+Each usage window is a three-cell bar (`░░░` unused → `███` exhausted), in the
+provider's order (Claude: 5h then 7d). The percentage is the most used window,
+the one that will cut you off first; credits are rounded to whole dollars.
 
 It never waits on the network: it prints the snapshot cached in
 `~/.cache/runway/snapshot.json` and, when that's older than 180 s, refreshes it
